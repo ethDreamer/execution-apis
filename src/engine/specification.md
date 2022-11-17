@@ -205,6 +205,7 @@ The fields are encoded as follows:
 
 This structure has the syntax of `ExecutionPayloadV1` and appends a single field: `withdrawals`.
 
+- `fork`: `enum` - `"BELLATRIX" | "CAPELLA"`
 - `parentHash`: `DATA`, 32 Bytes
 - `feeRecipient`:  `DATA`, 20 Bytes
 - `stateRoot`: `DATA`, 32 Bytes
@@ -364,8 +365,8 @@ Refer to the response for [`engine_newPayloadV1`](#engine_newpayloadv1).
 
 This method follows the same specification as [`engine_newPayloadV1`](#engine_newpayloadv1) with the exception of the following:
 
-1. If withdrawal functionality is activated, client software **MUST** return an `INVALID` status with the appropriate `latestValidHash` if `payload.withdrawals` is `null`.
-   Similarly, if the functionality is not activated, client software **MUST** return an `INVALID` status with the appropriate `latestValidHash` if `payloadAttributes.withdrawals` is not `null`.
+1. If `payload.fork` is `CAPELLA`, client software **MUST** return an `INVALID` status with the appropriate `latestValidHash` if `payload.withdrawals` is `null`.
+   Similarly, if `payload.fork` is `BELLATRIX`, client software **MUST** return an `INVALID` status with the appropriate `latestValidHash` if `payloadAttributes.withdrawals` is not `null`.
    Blocks without withdrawals **MUST** be expressed with an explicit empty list `[]` value.
    Refer to the validity conditions for [`engine_newPayloadV1`](#engine_newpayloadv1) to specification of the appropriate `latestValidHash` value.
 
@@ -478,7 +479,11 @@ This method follows the same specification as [`engine_forkchoiceUpdatedV1`](#en
 
 #### Specification
 
-Refer to the specification for [`engine_getPayloadV1`](#engine_getpayloadv1).
+This method follows the same specification as [`engine_getPayloadV1`](#engine_getpayloadv1) with the exception of the following:
+
+1. If `payload.fork` is `BELLATRIX`, client software **MUST** set `payload.withdrawals` to `null`.
+   Similarly, if `payload.fork` is `CAPELLA`, client software **MUST NOT** set `payload.withdrawals` to `null`.
+   Blocks without withdrawals **MUST** be expressed with an explicit empty list `[]` value.
 
 ### engine_exchangeTransitionConfigurationV1
 
